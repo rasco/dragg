@@ -38,19 +38,19 @@ export class Dragg {
 		this.setPosition(x, y)
 
 		const $elemBelow = this.getElementBelow(x, y)
-		this.emitter.emit('start', $elemBelow)
+		this.emitter.emit('start', event, $elemBelow)
 	}
 
 	dragMove(event) {
 		const {x, y} = this.getCoordinates(event)
 		
 		if ( !this.isInsideRestrictedZone(x, y) ) {
-			this.emitter.emit('outside')
+			this.emitter.emit('outside', event, {x, y})
 			this.$elementUnder = null
 			return
 		}
 
-		this.emitter.emit('move', event)
+		this.emitter.emit('move', event, {x, y})
 
 		const $elemBelow = this.getElementBelow(x, y)
 		
@@ -62,7 +62,7 @@ export class Dragg {
 		}
 
 		this.$elementUnder = $elemBelow
-		this.emitter.emit('change', $elemBelow)
+		this.emitter.emit('change', event, $elemBelow, {x, y})
 	}
 
 	dragStop(event) {
@@ -80,7 +80,7 @@ export class Dragg {
 			this.setPosition('', '')
 
 			const $elemBelow = this.getElementBelow(x, y)
-			this.emitter.emit('drop', $elemBelow)
+			this.emitter.emit('drop', event, $elemBelow, {x, y})
 		}
 	}
 
