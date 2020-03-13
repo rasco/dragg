@@ -1,9 +1,8 @@
-import $ from 'jquery';
 import EventEmitter from 'events';
 
 export class Dragg {
-	constructor(elem, props) {
-		this.$elem = $(elem)
+	constructor($elem, props) {
+		this.$elem = $elem
 		this.props = props || []
 
 		this.dragStart = this.dragStart.bind(this)
@@ -19,7 +18,8 @@ export class Dragg {
 
 		this.latestValidEvent = null
 		
-		this.$elem.on('mousedown touchstart', this.dragStart)
+		this.$elem.addEventListener('mousedown', this.dragStart)
+		this.$elem.addEventListener('touchstart', this.dragStart)
 	}
 
 	dragStart(event) {
@@ -29,10 +29,12 @@ export class Dragg {
 		
 		this.dragging = true
 
-		$(window).on('mouseup touchend', this.dragStop)
-		$(window).on('mousemove touchmove', this.dragMove)
+		window.addEventListener('mouseup', this.dragStop)
+		window.addEventListener('touchend', this.dragStop)
+		window.addEventListener('mousemove', this.dragMove)
+		window.addEventListener('touchmove', this.dragMove)
 
-		this.$elem.addClass(this.classes['dragging'])
+		this.$elem.classList.add(this.classes['dragging'])
 		this.setPosition(x, y)
 
 		const $elemBelow = this.getElementBelow(x, y)
@@ -54,7 +56,7 @@ export class Dragg {
 		
 		this.setPosition(x, y)
 
-		if ( this.$elementUnder && (this.$elementUnder.get(0) === $elemBelow.get(0)) ) {
+		if ( this.$elementUnder && (this.$elementUnder === $elemBelow) ) {
 			// same element: no need to fire a 'change' event
 			return
 		}
@@ -69,10 +71,12 @@ export class Dragg {
 		if ( this.dragging ) {
 			this.dragging = false
 			
-			$(window).off('mouseup touchend', this.dragStop)
-			$(window).off('mousemove touchmove', this.dragMove)
+			window.removeEventListener('mouseup', this.dragStop)
+			window.removeEventListener('touchend', this.dragStop)
+			window.removeEventListener('mousemove', this.dragMove)
+			window.removeEventListener('touchmove', this.dragMove)
 
-			this.$elem.removeClass(this.classes['dragging'])
+			this.$elem.classList.remove(this.classes['dragging'])
 			this.setPosition('', '')
 
 			const $elemBelow = this.getElementBelow(x, y)
@@ -113,12 +117,12 @@ export class Dragg {
 	}
 
 	getElementBelow(x, y) {
-		return $(document.elementFromPoint(x, y));
+		return document.elementFromPoint(x, y);
 	}
 
 	setPosition(x, y) {
-		this.$elem.css('left', x)
-		this.$elem.css('top', y)
+		this.$elem.style.left = `${x}px`
+		this.$elem.style.top = `${y}px`
 	}
 
 	on(event, handler) {
