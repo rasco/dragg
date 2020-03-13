@@ -50,19 +50,20 @@ export class Dragg {
 			return
 		}
 
+		this.setPosition(x, y)
 		this.emitter.emit('move', event, {x, y})
 
-		const $elemBelow = this.getElementBelow(x, y)
-		
-		this.setPosition(x, y)
+		if ( this.emitter.listenerCount('change') > 0 ) {
+			const $elemBelow = this.getElementBelow(x, y)
 
-		if ( this.$elementUnder && (this.$elementUnder === $elemBelow) ) {
-			// same element: no need to fire a 'change' event
-			return
+			if ( this.$elementUnder && (this.$elementUnder === $elemBelow) ) {
+				// same element: no need to fire a 'change' event
+				return
+			}
+
+			this.$elementUnder = $elemBelow
+			this.emitter.emit('change', event, $elemBelow, {x, y})
 		}
-
-		this.$elementUnder = $elemBelow
-		this.emitter.emit('change', event, $elemBelow, {x, y})
 	}
 
 	dragStop(event) {
